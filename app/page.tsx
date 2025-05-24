@@ -4,17 +4,16 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { askGpt } from '../lib/openai';
+
 type VocabItem = {
   word: string;
   meaning: string;
   example: string;
 };
 
-
 export default function Page() {
-const [vocabList, setVocabList] = useState<VocabItem[]>([]);
-const [current, setCurrent] = useState<VocabItem | null>(null);
-
+  const [vocabList, setVocabList] = useState<VocabItem[]>([]);
+  const [current, setCurrent] = useState<VocabItem | null>(null);
   const [input, setInput] = useState('');
   const [feedback, setFeedback] = useState('');
   const [hintLevel, setHintLevel] = useState(0);
@@ -25,16 +24,16 @@ const [current, setCurrent] = useState<VocabItem | null>(null);
   useEffect(() => {
     const fetchData = async () => {
       const snapshot = await getDocs(collection(db, 'junior_vocab'));
-      const data = snapshot.docs.map(doc => doc.data());
+      const data = snapshot.docs.map(doc => doc.data() as VocabItem);
       setVocabList(data);
     };
     fetchData();
   }, []);
 
-useEffect(() => {
-  if (vocabList.length > 0) showNext();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [vocabList]);
+  useEffect(() => {
+    if (vocabList.length > 0) showNext();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vocabList]);
 
   const showNext = () => {
     const random = vocabList[Math.floor(Math.random() * vocabList.length)];
